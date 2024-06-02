@@ -1,9 +1,12 @@
+package Client;
+
+import Server.ServerController;
+import Server.ServerWindow;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class ClientGUI extends JFrame {
+public class ClientGUI extends JFrame implements ClientView{
     public static final int HEIGHT = 400;
     public static final int WEIGHT = 500;
 
@@ -13,9 +16,11 @@ public class ClientGUI extends JFrame {
     private final JButton login, send;
     private final JTextArea userArea;
     private final JTextArea log = new JTextArea();
+    private ServerController serverController;
+    private ClientController clientController;
 
 
-    ClientGUI(ServerWindow serverWindow) {
+    public ClientGUI() {
         clientConnect = false;
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setSize(WEIGHT, HEIGHT);
@@ -23,7 +28,7 @@ public class ClientGUI extends JFrame {
         ip = new JTextField("127.0.0.1");
         ip.setSize(20, 20);
         port = new JTextField("8080");
-        name = new JTextField();
+        name = new JTextField("Name");
         password = new JPasswordField("password");
         login = new JButton("Login");
         userArea = new JTextArea();
@@ -45,32 +50,40 @@ public class ClientGUI extends JFrame {
 
         setVisible(true);
 
-        login.addActionListener(e -> {
-            if (serverWindow.isServerStatus() && !clientConnect) {
-                if (name.getText().isEmpty()) {
-                    log.append("Необходимо ввести имя пользователя\n");
-                } else {
-                    clientConnect = true;
-                    log.append("Соединение установленно\n");
-                    serverWindow.addClient(this);
-                }
-            } else if(serverWindow.isServerStatus() && clientConnect){
-                log.append("Вы уже вошли в учетную запись\n");
-            } else {
-                log.append("Сервер отключен\n");
-            }
-        });
+
+
+
 
         send.addActionListener(e -> {
-                    if(serverWindow.isServerStatus() && clientConnect) {
+                    if(serverController.connect() && clientConnect) {
                         String massage = name.getText() + " : " + userArea.getText();
                         log.append(massage + "\n");
-                        serverWindow.sendMassage(massage,this);
+                        serverController.sendMassageToClient(this,massage);
                         userArea.setText("");
                     }
                 }
         );
 
+
+    }
+
+    @Override
+    public void connectToServer() {
+        login.addActionListener(e -> {
+            if (serverController.connect() && !clientConnect) {
+                if (name.getText().isEmpty()) {
+                    log.append("Необходимо ввести имя пользователя\n");
+                } else {
+                    clientConnect = true;
+                    log.append("Соединение установленно\n");
+                    serverController.addClient(this);
+                }
+            } else if(serverController.connect() && clientConnect){
+                log.append("Вы уже вошли в учетную запись\n");
+            } else {
+                log.append("Сервер отключен\n");
+            }
+        });
 
     }
 
@@ -82,4 +95,19 @@ public class ClientGUI extends JFrame {
         log.append(string);
     }
 
+    @Override
+    public void showMassage(String massage) {
+        log.append(massage);
+    }
+
+
+
+    @Override
+    public void disconnectFromServer() {
+
+    }
+
+    public void setClientController(ClientController clientController) {
+        this.clientController = clientController;
+    }
 }
