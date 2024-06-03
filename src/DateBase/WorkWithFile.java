@@ -23,6 +23,7 @@ public class WorkWithFile implements StorageSystem {
                 sb.append(line).append("\n");
             }
         } catch (IOException e) {
+            sb.append("Файл не найдет");
         }
         return sb.toString();
     }
