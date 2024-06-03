@@ -7,6 +7,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.security.Key;
 
 public class ClientGUI extends JFrame implements ClientView{
     public static final int HEIGHT = 400;
@@ -55,6 +58,16 @@ public class ClientGUI extends JFrame implements ClientView{
         add(chat, BorderLayout.CENTER);
 
         setVisible(true);
+
+        userArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if(e.getKeyChar() == '\n'){
+                    clientController.sendMassage(userArea.getText());
+                    userArea.setText("");
+                }
+            }
+        });
 
         login.addActionListener(new ActionListener() {
             @Override
