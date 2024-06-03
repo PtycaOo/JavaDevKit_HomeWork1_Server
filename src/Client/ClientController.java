@@ -3,34 +3,51 @@ package Client;
 import Server.ServerController;
 
 public class ClientController {
-    private boolean connected;
+    private boolean isConnected;
     String name;
+    private ClientView clientView;
     private ServerController serverController;
 
-    public void setClientView(ClientView clientView) {
-        this.clientView = clientView;
-    }
-
-    private ClientView clientView;
-
-
-    public boolean connected() {
-        if(serverController.connect()){
-            clientView.connectToServer();
-            serverController.addClient(clientView);
-            return true;
-        } else {
-            return false;
-        }
-
+    public String getName() {
+        return clientView.getName();
     }
 
     public void setServerController(ServerController serverController) {
         this.serverController = serverController;
     }
 
-    private void showMassage(String massage){
+    public void setClientView(ClientView clientView) {
+        this.clientView = clientView;
+    }
+
+    public void connected() {
+        if(!isConnected && serverController.isConnected()){
+            isConnected = true;
+            serverController.addClient(this);
+        } else if(isConnected) {
+            clientView.showMassage(clientView.getName() + " уже подключен");
+            serverController.showOnWindow(clientView.getName() + " уже подключен");
+        } else {
+            clientView.showMassage("Cервер отключен");
+        }
+
+
+    }
+
+    public void showMassage(String massage){
         clientView.showMassage(massage);
     }
 
+    public void sendMassage(String massage) {
+        if(isConnected && serverController.isConnected()){
+            String toSend = clientView.getName() + " : " + massage;
+            clientView.showMassage(toSend);
+            serverController.sendMassageToUser(toSend,this);
+        } else if(!isConnected){
+            clientView.showMassage("Вы не подключены к серверу");
+        } else{
+            clientView.showMassage("Сервер выключен");
+        }
+
+    }
 }

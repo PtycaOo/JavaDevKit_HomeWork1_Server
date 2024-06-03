@@ -5,13 +5,20 @@ import Server.ServerWindow;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class ClientGUI extends JFrame implements ClientView{
     public static final int HEIGHT = 400;
     public static final int WEIGHT = 500;
 
     private boolean clientConnect;
-    private final JTextField ip, port, name;
+    private final JTextField ip;
+    private final JTextField port;
+
+
+
+    private final JTextField name;
     private final JPasswordField password;
     private final JButton login, send;
     private final JTextArea userArea;
@@ -50,42 +57,26 @@ public class ClientGUI extends JFrame implements ClientView{
 
         setVisible(true);
 
-
-
+        login.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clientController.connected();
+            }
+        });
 
 
         send.addActionListener(e -> {
-                    if(serverController.connect() && clientConnect) {
-                        String massage = name.getText() + " : " + userArea.getText();
-                        log.append(massage + "\n");
-                        serverController.sendMassageToClient(this,massage);
-                        userArea.setText("");
-                    }
-                }
-        );
-
+            clientController.sendMassage(userArea.getText());
+            userArea.setText("");
+        });
 
     }
 
     @Override
-    public void connectToServer() {
-        login.addActionListener(e -> {
-            if (serverController.connect() && !clientConnect) {
-                if (name.getText().isEmpty()) {
-                    log.append("Необходимо ввести имя пользователя\n");
-                } else {
-                    clientConnect = true;
-                    log.append("Соединение установленно\n");
-                    serverController.addClient(this);
-                }
-            } else if(serverController.connect() && clientConnect){
-                log.append("Вы уже вошли в учетную запись\n");
-            } else {
-                log.append("Сервер отключен\n");
-            }
-        });
-
+    public String getName() {
+        return name.getText();
     }
+
 
     public void clientDisconnect() {
         clientConnect = false;
@@ -97,10 +88,8 @@ public class ClientGUI extends JFrame implements ClientView{
 
     @Override
     public void showMassage(String massage) {
-        log.append(massage);
+        log.append(massage + "\n");
     }
-
-
 
     @Override
     public void disconnectFromServer() {
