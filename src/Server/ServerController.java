@@ -50,6 +50,9 @@ public class ServerController {
             serverView.showOnWindow("Сервер выключен");
             saveLogToFile("Сервер выключен");
             connected = false;
+            for (ClientController client: clientList){
+                    client.disconnected();
+            }
         }
 
     }

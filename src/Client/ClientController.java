@@ -24,14 +24,20 @@ public class ClientController {
         if(!isConnected && serverController.isConnected()){
             isConnected = true;
             serverController.addClient(this);
-        } else if(isConnected) {
+        } else if(isConnected && !serverController.isConnected()) {
             clientView.showMassage(clientView.getName() + " уже подключен");
             serverController.showOnWindow(clientView.getName() + " уже подключен");
         } else {
             clientView.showMassage("Cервер отключен");
         }
+    }
 
-
+    public void disconnected(){
+        if(isConnected){
+            isConnected = false;
+            clientView.showMassage("Сервер отключен");
+            serverController.stopServer();
+        }
     }
 
     public void showMassage(String massage){

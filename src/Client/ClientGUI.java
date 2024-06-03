@@ -28,7 +28,6 @@ public class ClientGUI extends JFrame implements ClientView{
 
 
     public ClientGUI() {
-        clientConnect = false;
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setSize(WEIGHT, HEIGHT);
         setTitle("Client");
