@@ -38,7 +38,7 @@ public class ClientGUI extends JFrame implements ClientView{
         password = new JPasswordField("password");
         login = new JButton("Login");
         userArea = new JTextArea();
-        send = new JButton("Send");
+        send = new JButton("Отправить");
         JPanel clientPanel = new JPanel(new GridLayout(2, 6));
         clientPanel.add(ip);
         clientPanel.add(port);
@@ -48,7 +48,7 @@ public class ClientGUI extends JFrame implements ClientView{
         add(clientPanel, BorderLayout.NORTH);
 
         JPanel clientChat = new JPanel(new GridLayout(1, 2));
-        clientChat.add(userArea, BorderLayout.WEST);
+        clientChat.add(userArea, BorderLayout.CENTER);
         clientChat.add(send, BorderLayout.EAST);
         add(clientChat, BorderLayout.SOUTH);
         JScrollPane chat = new JScrollPane(log);
@@ -88,11 +88,6 @@ public class ClientGUI extends JFrame implements ClientView{
     @Override
     public void showMassage(String massage) {
         log.append(massage + "\n");
-    }
-
-    @Override
-    public void disconnectFromServer() {
-
     }
 
     public void setClientController(ClientController clientController) {

@@ -1,18 +1,21 @@
 package Server;
 
 import Client.ClientController;
-import Client.ClientView;
+import DateBase.StorageSystem;
+import DateBase.WorkWithFile;
 
 import java.io.*;
-import java.util.ArrayList;
 
 public class ServerController {
     private boolean connected;
     private ServerView serverView;
-    ArrayList<ClientController> clientList = new ArrayList<>();
+    private final Repository repository;
+    private final StorageSystem system;
 
-    public ArrayList<ClientController> getClientList() {
-        return clientList;
+    public ServerController(ServerView serverView,Repository repository,StorageSystem system) {
+        this.serverView = serverView;
+        this.repository = repository;
+        this.system = system;
     }
 
     public boolean isConnected() {
@@ -26,7 +29,7 @@ public class ServerController {
     public void addClient(ClientController client){
         showOnWindow(client.getName() + " подключился");
         client.showMassage(client.getName() + " подключился");
-        clientList.add(client);
+        repository.addUser(client);
     }
 
     public void showOnWindow(String string){
@@ -50,7 +53,7 @@ public class ServerController {
             serverView.showOnWindow("Сервер выключен");
             saveLogToFile("Сервер выключен");
             connected = false;
-            for (ClientController client: clientList){
+            for (ClientController client: repository.getClientList()){
                     client.disconnected();
             }
         }
@@ -58,30 +61,16 @@ public class ServerController {
     }
 
     public void saveLogToFile(String s){
-        String filePath = "Server/log.txt";
-        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath,true))){
-            writer.println(s);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        system.saveLogToFile(s);
     }
 
     private void loadingFromFile(){
-        try(BufferedReader bufferedReader = new BufferedReader(new FileReader("Server/log.txt"));) {
-            String line;
-            while((line = bufferedReader.readLine()) !=null){
-                showOnWindow(line);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+        showOnWindow(system.loadLogFromFile());
     }
-
 
     public void sendMassageToUser(String massage, ClientController sender) {
         serverView.showOnWindow(massage);
-        for (ClientController client: clientList){
+        for (ClientController client: repository.getClientList()){
             if(client != sender){
                 client.showMassage(massage);
             }

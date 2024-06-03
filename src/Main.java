@@ -1,13 +1,17 @@
 import Client.ClientController;
 import Client.ClientGUI;
+import DateBase.StorageSystem;
+import DateBase.WorkWithFile;
 import Server.ServerController;
+import Server.ServerRepository;
 import Server.ServerWindow;
 
 public class Main {
     public static void main(String[] args) {
         ServerWindow serverWindow = new ServerWindow();
-        ServerController serverController = new ServerController();
-        serverController.setServerView(serverWindow);
+        ServerRepository serverRepository = new ServerRepository();
+        WorkWithFile workWithFile = new WorkWithFile();
+        ServerController serverController = new ServerController(serverWindow,serverRepository,workWithFile);
         serverWindow.setServerController(serverController);
 
         ClientGUI clientGUI_1 = new ClientGUI();
